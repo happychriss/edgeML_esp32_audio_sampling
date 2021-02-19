@@ -45,6 +45,16 @@ QueueHandle_t m_i2sQueue;
 WiFiClient *wifiClientI2S = nullptr;
 HTTPClient *httpClientI2S = nullptr;
 
+float values[EI_CLASSIFIER_LABEL_COUNT]={0.0};
+
+#define STATE_NOTHING 0
+#define STATE_FOUND 1
+#define STATE_FOUND_MISSED_ONE 2
+#define STATE_FOUND_MISSED_TWO 3
+#define STATE_RESOLVED 4
+short   result_state=STATE_NOTHING;
+
+
 #undef DATA_ACQUISITION
 
 /**
@@ -204,7 +214,12 @@ void setup() {
 /**
  * @brief      Arduino main function. Runs the inferencing loop.
  */
+
+
+
+
 void loop() {
+
 
     bool m = microphone_inference_record();
     if (!m) {
@@ -233,27 +248,65 @@ void loop() {
 //print the predictions
 //       ei_printf("Predictions "); ei_printf("(DSP: %d ms., Classification: %d ms., Anomaly: %d ms.)", result.timing.dsp, result.timing.classification, result.timing.anomaly);
 //       ei_printf(": \n");
-        bool b_print_result = false;
+        bool b_found_result = false;
+
         int max_value_idx = -1;
         float max_value = 0;
+
         for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
             if ((result.classification[ix].value > 0.8) && (result.classification[ix].label[0] != 'N')) {
-                ei_printf("\n********\n");
-                b_print_result = true;
+//                ei_printf("\nResults:\n");
+
+                b_found_result = true;
                 if (result.classification[ix].value > max_value) {
                     max_value = result.classification[ix].value;
                     max_value_idx = ix;
                 }
             }
         }
-        if (b_print_result) {
+
+        if (b_found_result) {
             for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
-                ei_printf("    %s: %.5f", result.classification[ix].label, result.classification[ix].value);
-                if (max_value_idx == ix) ei_printf("<-----\n");
-                else ei_printf("\n");
+//              ei_printf("    %s: %.5f", result.classification[ix].label, result.classification[ix].value);
+//                if (max_value_idx == ix) ei_printf("<-----\n");  else ei_printf("\n");
             }
 
         } else { ei_printf("."); }
+
+        if (b_found_result) {
+            result_state = STATE_FOUND;
+            values[max_value_idx]=values[max_value_idx]+max_value;
+        } else {
+            switch (result_state) {
+                case STATE_NOTHING: result_state = STATE_NOTHING;break;
+                case  STATE_FOUND: result_state = STATE_FOUND_MISSED_ONE;break;
+                case STATE_FOUND_MISSED_ONE:  result_state = STATE_FOUND_MISSED_TWO;break;
+                case STATE_FOUND_MISSED_TWO:  result_state = STATE_RESOLVED;break;
+                default:DPL("aaaaaaaaaaaaaaaaargh");DPL(result_state);
+            }
+        }
+
+        if (result_state == STATE_RESOLVED) {
+
+            int final_value_idx = -1;
+            float final_value = 0.0;
+
+            for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+
+                if (values[ix] > final_value) {
+                    final_value=values[ix];
+                    final_value_idx=ix;
+                }
+            }
+            DP("\n------------> ");
+            DP(ei_classifier_inferencing_categories[final_value_idx]);DP(" - "); DPL(final_value);
+
+//            ei_printf("***********************    %s: %.5f", ei_classifier_inferencing_categories[final_value_idx], my_final_value);
+            memset(values, 0, sizeof(values));
+            result_state = STATE_NOTHING;
+        }
+
+
 
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
         ei_printf("    anomaly score: %.3f\n", result.anomaly);
