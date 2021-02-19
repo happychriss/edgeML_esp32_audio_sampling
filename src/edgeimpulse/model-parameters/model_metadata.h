@@ -38,11 +38,11 @@
 #define EI_CLASSIFIER_DATATYPE_FLOAT32           1
 #define EI_CLASSIFIER_DATATYPE_INT8              9
 
-#define EI_CLASSIFIER_PROJECT_ID                 16877
+#define EI_CLASSIFIER_PROJECT_ID                 18137
 #define EI_CLASSIFIER_PROJECT_OWNER              "Christian"
-#define EI_CLASSIFIER_PROJECT_NAME               "esp32_numbers"
-#define EI_CLASSIFIER_PROJECT_DEPLOY_VERSION     14
-#define EI_CLASSIFIER_NN_INPUT_FRAME_SIZE        1062
+#define EI_CLASSIFIER_PROJECT_NAME               "esp32_numbers v3 v3"
+#define EI_CLASSIFIER_PROJECT_DEPLOY_VERSION     44
+#define EI_CLASSIFIER_NN_INPUT_FRAME_SIZE        697
 #define EI_CLASSIFIER_RAW_SAMPLE_COUNT           9600
 #define EI_CLASSIFIER_RAW_SAMPLES_PER_FRAME      1
 #define EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE       (EI_CLASSIFIER_RAW_SAMPLE_COUNT * EI_CLASSIFIER_RAW_SAMPLES_PER_FRAME)
@@ -50,15 +50,15 @@
 #define EI_CLASSIFIER_INPUT_HEIGHT               0
 #define EI_CLASSIFIER_INTERVAL_MS                0.0625
 #define EI_CLASSIFIER_OUT_TENSOR_NAME            "y_pred/Softmax_1:0"
-#define EI_CLASSIFIER_LABEL_COUNT                11
+#define EI_CLASSIFIER_LABEL_COUNT                12
 #define EI_CLASSIFIER_HAS_ANOMALY                0
 #define EI_CLASSIFIER_FREQUENCY                  16000
 
-#define EI_CLASSIFIER_TFLITE_ARENA_SIZE          11814
+#define EI_CLASSIFIER_TFLITE_ARENA_SIZE          11161
 #define EI_CLASSIFIER_TFLITE_INPUT_DATATYPE      EI_CLASSIFIER_DATATYPE_INT8
 #define EI_CLASSIFIER_TFLITE_INPUT_QUANTIZED     1
-#define EI_CLASSIFIER_TFLITE_INPUT_SCALE         0.04065676033496857
-#define EI_CLASSIFIER_TFLITE_INPUT_ZEROPOINT     -2
+#define EI_CLASSIFIER_TFLITE_INPUT_SCALE         0.03497619554400444
+#define EI_CLASSIFIER_TFLITE_INPUT_ZEROPOINT     3
 #define EI_CLASSIFIER_TFLITE_OUTPUT_DATATYPE     EI_CLASSIFIER_DATATYPE_INT8
 #define EI_CLASSIFIER_TFLITE_OUTPUT_QUANTIZED     1
 #define EI_CLASSIFIER_TFLITE_OUTPUT_SCALE        0.00390625
@@ -71,10 +71,10 @@
 #define EI_CLASSIFIER_SENSOR                     EI_CLASSIFIER_SENSOR_MICROPHONE
 #define EI_CLASSIFIER_SLICE_SIZE                 (EI_CLASSIFIER_RAW_SAMPLE_COUNT / EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW)
 #ifndef EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW
-#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW    4
+#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW    5
 #endif // EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW
 
-const char* ei_classifier_inferencing_categories[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "N" };
+const char* ei_classifier_inferencing_categories[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "N", "o" };
 
 typedef struct {
     uint16_t implementation_version;
@@ -165,14 +165,14 @@ typedef struct {
 ei_dsp_config_mfcc_t ei_dsp_config_3 = {
     1,
     1,
-    18,
-    0.01000f,
-    0.01000f,
+    17,
+    0.01400f,
+    0.01400f,
     32,
     256,
-    101,
-    200,
-    6000,
+    261,
+    300,
+    0,
     0.98000f,
     1
 };

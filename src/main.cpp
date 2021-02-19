@@ -24,7 +24,7 @@
 
 /* Includes ---------------------------------------------------------------- */
 #include <Arduino.h>
-#include "esp32_numbers_inference.h"
+#include "esp32_numbers_v3_v3_inference.h"
 #include "inference.h"
 #include "inference_parameter.h"
 #include "driver/i2s.h"
@@ -151,7 +151,8 @@ void setup() {
     // put your setup code here, to run once:
     Serial.begin(115200);
 
-    DP("Edge Impulse Inferencing Demo - Version: ");DPL(EI_CLASSIFIER_PROJECT_DEPLOY_VERSION);
+    DP("Edge Impulse Inferencing Demo - Version: ");
+    DPL(EI_CLASSIFIER_PROJECT_DEPLOY_VERSION);
     pinMode(LED_BUILTIN, OUTPUT); //signal for model
 
     pinMode(19, INPUT);
@@ -229,13 +230,31 @@ void loop() {
     }
     digitalWrite(LED_BUILTIN, LOW);
     if (++print_results >= (0)) {
-        // print the predictions
-//        ei_printf("Predictions "); ei_printf("(DSP: %d ms., Classification: %d ms., Anomaly: %d ms.)", result.timing.dsp, result.timing.classification, result.timing.anomaly);
-//        ei_printf(": \n");
+//print the predictions
+//       ei_printf("Predictions "); ei_printf("(DSP: %d ms., Classification: %d ms., Anomaly: %d ms.)", result.timing.dsp, result.timing.classification, result.timing.anomaly);
+//       ei_printf(": \n");
+        bool b_print_result = false;
+        int max_value_idx = -1;
+        float max_value = 0;
         for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
-            if ((result.classification[ix].value > 0.3) && (result.classification[ix].label[0]!='N') )
-            ei_printf("    %s: %.5f\n", result.classification[ix].label, result.classification[ix].value);
+            if ((result.classification[ix].value > 0.8) && (result.classification[ix].label[0] != 'N')) {
+                ei_printf("\n********\n");
+                b_print_result = true;
+                if (result.classification[ix].value > max_value) {
+                    max_value = result.classification[ix].value;
+                    max_value_idx = ix;
+                }
+            }
         }
+        if (b_print_result) {
+            for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+                ei_printf("    %s: %.5f", result.classification[ix].label, result.classification[ix].value);
+                if (max_value_idx == ix) ei_printf("<-----\n");
+                else ei_printf("\n");
+            }
+
+        } else { ei_printf("."); }
+
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
         ei_printf("    anomaly score: %.3f\n", result.anomaly);
 #endif
@@ -244,6 +263,7 @@ void loop() {
         print_results = 0;
 
     }
+
 #endif //DATA_ACQUISITION
 }
 

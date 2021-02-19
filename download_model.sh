@@ -2,7 +2,7 @@
 set -e
 echo "Start Download..."
 curl --request GET \
-  --url 'https://studio.edgeimpulse.com/v1/api/16877/deployment/download?type=arduino' \
+  --url 'https://studio.edgeimpulse.com/v1/api/18137/deployment/download?type=arduino' \
   --header 'Accept: application/zip' \
   --header 'x-api-key: '''${1}''\
   --output arduino_model.zip

@@ -19,11 +19,42 @@ Ready made testdata is uploaded to EdgeImpulse.
 After model-build on EdgeImpulse I download the new model via script download_model.sh.
 The inference is running continuously on the ESP32.
 
+#### ModelSettings
+
+#####Impulse:
+In German most numbers are very short, less than 500ms. Only one number ("sieben" = "seven" is longer, I only recorded samples with the 2nd half of the number to reduce length - that worked)
+* Recorded samples Length: 700ms
+* Impulse With: 600ms 
+* Window increase: 100ms (this results in 2 features per sample)
+
+#####Prepropessing MFCC: 
+* Coefficients:17 
+* Frame Length: 0.014
+* Frame Stride: 0.014
+* Filter: 32
+* FFT Length: 256
+* Window Size: 261
+* Frequency: 300-8000 (0)
+* Preemphasis: 0.98, with 1 Shift
+
+##### Classifier:1D Convolutional
+``` python
+model.add(Reshape((int(input_length / 17), 17), input_shape=(input_length, )))
+model.add(Conv1D(18, kernel_size=3, activation='relu', padding='same'))
+model.add(MaxPooling1D(pool_size=2, strides=2, padding='same'))
+model.add(Dropout(0.5))
+model.add(Conv1D(34, kernel_size=3, activation='relu', padding='same'))
+model.add(MaxPooling1D(pool_size=2, strides=2, padding='same'))
+model.add(Dropout(0.6))
+model.add(Flatten())
+model.add(Dense(classes, activation='softmax', name='y_pred'))
+```
+
 
 ### Status
-* Full flow with platformio and clion supported, compiling edgeimpulse sdk and dsp, inference
-* integrated INMP441 in framework
+* Full flow with platformio and Clion-Ide  supported, compiling edgeimpulse sdk and dsp, inference
+* integrated INMP441 I2S MEMS microphone in framework
 * allow (via define) to switch between voice acquisition (for sampling) and inference (voice recognition) using the same functions
-* current final performance is 60%, not enough :-(
+* performance is well for my own voice
 
 Details can be found at: https://44-2.de

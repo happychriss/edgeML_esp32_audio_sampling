@@ -14,5 +14,5 @@
  * For more info: https://docs.edgeimpulse.com/docs/continuous-audio-sampling
  */
 #undef EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW
-#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW 2
+#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW 5
 #endif //EDGE_ESP32_INFERENCE_PARAMETER_H
